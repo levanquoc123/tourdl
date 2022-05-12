@@ -137,7 +137,7 @@ router.post('/changePassword',auth.authenticateToken,(req,res)=>{
 
 })
 //xem thong tin ca nhan
-router.get('/getemail',auth.authenticateToken,checkRole.checkRole,(req,res)=>{
+router.get('/getemail',auth.authenticateToken,(req,res)=>{
     const email=res.locals.email;
     var query ="select FullName,sdt,cmnd,NgaySinh,GioiTinh,DiaChi from user where email=?";
     connection.query(query,[email],(err,results)=>{
@@ -166,9 +166,8 @@ router.get('/get',auth.authenticateToken,checkRole.checkRole,(req,res)=>{
 //cập nhật tài khoản user
 router.patch('/role',auth.authenticateToken,checkRole.checkRole,(req,res)=>{
     let user = req.body;
-    var role = "staff";
     var query = "update user set role=? where id=?";
-    connection.query(query,[role,user.id],(err,results)=>{
+    connection.query(query,[user.role,user.id],(err,results)=>{
         if(!err){
             if(results.affectedRow==0){
                 return res.status(404).json({message:"User id does not exist"});
