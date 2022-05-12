@@ -37,6 +37,23 @@ router.get('/blog',auth.authenticateToken,checkRole.checkRoleUser,(req,res,next)
     })
 })
 
+//cap nhat
+router.patch('/update',auth.authenticateToken,checkRole.checkRoleUser,(req,res,next)=>{
+    let tour = req.body;
+    var query = "update tour set name=?,description=?,status=? where id=?";
+    connection.query(query,[tour.name,tour.description,tour.status,tour.id],(err,results)=>{
+        if(!err){
+            if(results.affectedRow==0){
+                return res.status(404).json({message:"Tour id does not exist"});
+            }
+            return res.status(200).json({message:"Tour Updated Successfully"});
+        }
+        else{
+            return res.status(500).json(err);
+        }
+    })
+})
+
 
 
 //admin
@@ -56,12 +73,25 @@ router.get('/getid',auth.authenticateToken,checkRole.checkRole,(req,res,next)=>{
 
 //user 
 router.get('/get',(req,res,next)=>{
-    var query = "select c.name, c.description, from tour as c inner join img as d where c.id=d.tourId";
+    var query = "select c.name, c.description from tour as c inner join img as d where c.id=d.tourId";
     connection.query(query,(err,results)=>{
         if(!err){
             return res.status(404).json(results);
         }
         else{
+            return res.status(500).json(err);
+        }
+    })
+})
+
+router.get('/getByTour/:id',(req,res,next)=>{
+    const id=req.params.id;
+    var query = "select id, name, description from tour where id=? and status = 'true'";
+    connection.query(query,[id],(err,results)=>{
+        if(!err){
+            return res.status(200).json(results);
+        }
+        else {
             return res.status(500).json(err);
         }
     })
